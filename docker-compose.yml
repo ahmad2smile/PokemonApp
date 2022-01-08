@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  pokemonapp:
+    image: ${DOCKER_REGISTRY-}pokemonapp
+    build:
+      context: .
+      dockerfile: PokemonApp/Dockerfile
