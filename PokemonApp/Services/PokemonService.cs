@@ -1,16 +1,19 @@
 ﻿using System.Net;
 using PokemonApp.Clients;
 using PokemonApp.Models;
+using PokemonApp.Utils;
 
 namespace PokemonApp.Services;
 
 public class PokemonService : IPokemonService
 {
     private readonly IHttpClientFactory _clientFactory;
+    private readonly IFunTranslatorService _funTranslatorService;
 
-    public PokemonService(IHttpClientFactory clientFactory)
+    public PokemonService(IHttpClientFactory clientFactory, IFunTranslatorService funTranslatorService)
     {
         _clientFactory = clientFactory;
+        _funTranslatorService = funTranslatorService;
     }
 
     public async Task<PokemonResponse> GetByName(string name)
@@ -26,8 +29,10 @@ public class PokemonService : IPokemonService
                 return new UnknownPokemonError(name);
             }
 
+            var description = result.flavor_text_entries?.First().flavor_text;
+
             return new Pokemon(
-                result.name, result.flavor_text_entries?.First().flavor_text, result.habitat?.name, result.is_legendary
+                result.name, description, result.habitat?.name, result.is_legendary
             );
         }
         catch (Exception e)
@@ -39,5 +44,25 @@ public class PokemonService : IPokemonService
 
             return new UnknownPokemonError(name);
         }
+    }
+
+    public async Task<PokemonResponse> GetByNameTranslated(string name)
+    {
+        var result = await GetByName(name);
+
+        if (!result.IsT0)
+        {
+            return result;
+        }
+
+        var pokemon = result.AsT0;
+
+        var translator = TranslatorHelper.GetTranslatorVariant(pokemon);
+
+        var description = pokemon.Description is not null
+            ? await _funTranslatorService.Translate(pokemon.Description, translator)
+            : string.Empty;
+
+        return pokemon with { Description = description };
     }
 }

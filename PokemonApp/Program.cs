@@ -11,8 +11,10 @@ services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddPokemonClient();
+services.AddFunTranslationClient();
 
 services.AddSingleton<IPokemonService, PokemonService>();
+services.AddSingleton<IFunTranslatorService, FunTranslatorService>();
 
 var app = builder.Build();
 

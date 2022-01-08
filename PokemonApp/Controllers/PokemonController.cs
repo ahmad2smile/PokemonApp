@@ -15,11 +15,20 @@ public class PokemonController : ControllerBase
         _pokemonService = pokemonService;
     }
 
-    [HttpGet]
+    [HttpGet("{name}")]
     public async Task<IActionResult> Get(string name)
     {
         var result = await _pokemonService.GetByName(name);
 
-        return result.Match<IActionResult>(Ok, NotFound, HttpResponseUtils.ServerError);
+        return result.Match(Ok, NotFound, HttpResponseUtils.ServerError);
+    }
+
+
+    [HttpGet("translated/{name}")]
+    public async Task<IActionResult> GetTranslated(string name)
+    {
+        var result = await _pokemonService.GetByNameTranslated(name);
+
+        return result.Match(Ok, NotFound, HttpResponseUtils.ServerError);
     }
 }
