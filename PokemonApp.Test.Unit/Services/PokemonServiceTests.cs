@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using PokemonApp.Models;
 using PokemonApp.Services;
@@ -20,9 +21,11 @@ public class PokemonServiceTests
     public PokemonServiceTests()
     {
         _funTranslatorService = Substitute.For<IFunTranslatorService>();
+        var cacheService = Substitute.For<ICacheService>();
         _httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var logger = new Logger<PokemonService>(new LoggerFactory());
 
-        _pokemonService = new PokemonService(_httpClientFactory, _funTranslatorService);
+        _pokemonService = new PokemonService(_httpClientFactory, _funTranslatorService, cacheService, logger);
     }
 
     [Fact(DisplayName = "Get Pokemon for Given Name")]

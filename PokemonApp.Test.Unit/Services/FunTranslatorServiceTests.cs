@@ -19,8 +19,9 @@ public class FunTranslatorServiceTests
     public FunTranslatorServiceTests()
     {
         _httpClientFactory = Substitute.For<IHttpClientFactory>();
+        var cacheService = Substitute.For<ICacheService>();
         var logger = new Logger<FunTranslatorService>(new LoggerFactory());
-        _funcTranslatorService = new FunTranslatorService(_httpClientFactory, logger);
+        _funcTranslatorService = new FunTranslatorService(_httpClientFactory, logger, cacheService);
     }
 
     [Fact(DisplayName = "Translate returns given message")]

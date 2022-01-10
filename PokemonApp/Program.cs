@@ -1,9 +1,11 @@
 using PokemonApp.Clients;
+using PokemonApp.Config;
 using PokemonApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var configurations = builder.Configuration;
 
 var services = builder.Services;
 services.AddControllers();
@@ -12,18 +14,17 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddPokemonClient();
 services.AddFunTranslationClient();
+services.AddRedisConfig(configurations);
 
 services.AddSingleton<IPokemonService, PokemonService>();
 services.AddSingleton<IFunTranslatorService, FunTranslatorService>();
+services.AddSingleton<ICacheService, CacheService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// NOTE: Adding for testing Production Docker build
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseAuthorization();
 

@@ -1,8 +1,23 @@
 version: '3.4'
 
+networks:
+  common-net:
+    driver: bridge
+
 services:
   pokemonapp:
     image: ${DOCKER_REGISTRY-}pokemonapp
     build:
       context: .
       dockerfile: PokemonApp/Dockerfile
+    networks:
+      - common-net
+  redis_master:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - common-net
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_REPLICATION_MODE=master
